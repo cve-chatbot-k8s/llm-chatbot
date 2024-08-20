@@ -1,35 +1,48 @@
-## Project: RAG On Custom CVE Data Deployed on Kubernetes
+## Robust and Highly Available Architecture for CVE Data Chatbot
 
-### Kubernetes Architecture
+This project deploys a Chatbot using Retrieval-Augmented Generation (RAG) to answer questions about the latest Common Vulnerabilities and Exposures (CVE) data. Below is a detailed explanation of the architecture and its key components.
 
-This project aims to build a RAG (Retrieval-Augmented Generation) system around the latest CVE (Common Vulnerabilities and Exposures) data. Below is the detailed architecture of the project deployed on an AWS EKS cluster.
+### Architecture Overview
 
 ![Kubernetes Architecture](./kubernetes.png)
 
-### Architecture Explanation
+### Key Components
 
-This is a Robust and Highly Available architecture to deploy a Chatbot that uses RAG (Retrieval-Augmented Generation) to answer questions about the latest CVE (Common Vulnerabilities and Exposures) data.
-We created a custom kubernetes operator to monitor for new CVE releases and push the data via the processor to the kafka cluster
-The consumer then processes the received messages and stores them in the Postgres Database.
-Another kubernetes Job is created to create embeddings for the CVE data in the same Postgres Database.
-These embeddings are used when the user asks a question about the CVE data. We managed to train the LLM (Language Model) on the embeddings to generate answers to the questions asked by the user.
-The kind of questions that can be asked are:
-- I am using gitlab which vulnerability does gitlab have? And how can I mitigate it?
-- Which CVE affected GlobalProtect App by Palo Alto Networks Describe in detail
-- What is the CVE for the vulnerability in the Apache HTTP Server 2.4.46 and how can I mitigate it?
+1. **Custom Kubernetes Operator**
+    - Monitors for new CVE releases.
+    - Pushes data via the processor to the Kafka cluster.
 
+2. **Kafka Cluster**
+    - Receives data from the custom operator.
+    - Ensures high availability and fault tolerance.
 
-This project also features Robust Monitoring and is created for being Highly Available and Scalable. Here are some key aspects of the architecture:
+3. **Consumer Application**
+    - Processes received messages.
+    - Stores data in the PostgreSQL database.
 
-- Microservices Architecture: The project is built using a microservices architecture. Each service is deployed as a separate container in the Kubernetes cluster.
-- Availability: Used Anti-Affinity rules to ensure that the pods are not scheduled on the same node for all components.
-- Scalability: Each Kubernetes component using Horizontal Pod Autoscaler to scale based on the CPU and Memory usage. We have configured PDB (Pod Disruption Budget) to ensure that the pods are not disrupted during scaling.
-- Monitoring: Prometheus and Grafana is bootstrapped with the EKS cluster to get metrics from the Kubernetes cluster. We also created custom dashboards in Grafana to monitor the services.
-- Logging: We are using FluentD to collect all the logs from multiple services and forward them to CloudWatch.
-- Security: IAM Roles are created using the Least Privilege Principle. We are using AWS EKS with private subnets and the EKS cluster is bootstrapped with the AWS CNI plugin. All external services are exposed using istio ingress gateway with a valid SSL certificate.
-- Service Mesh: We are using Istio in a sidecar configuration to manage the traffic between the services. We have configured the Istio Gateway to expose the services to the outside world.
-- SSL Certificates: We are using cert-manager to manage the SSL certificates for the services. We have configured the cert-manager to automatically renew the certificates. Thus there is no manual intervention required to renew the certificates.
+4. **Embeddings Job**
+    - Creates embeddings for CVE data.
+    - Stores embeddings in the PostgreSQL database.
 
+5. **Language Model Chatbot (LLM)**
+    - Uses embeddings to generate answers to user questions.
+
+### Example Questions
+
+- "I am using GitLab. Which vulnerability does GitLab have? How can I mitigate it?"
+- "Which CVE affected GlobalProtect App by Palo Alto Networks? Describe in detail."
+- "What is the CVE for the vulnerability in the Apache HTTP Server 2.4.46 and how can I mitigate it?"
+
+### Architecture Features
+
+- **Microservices Architecture**: Each service is deployed as a separate container in the Kubernetes cluster.
+- **Availability**: Anti-Affinity rules ensure pods are not scheduled on the same node.
+- **Scalability**: Horizontal Pod Autoscaler scales components based on CPU and memory usage. Pod Disruption Budget (PDB) ensures minimal disruption during scaling.
+- **Monitoring**: Prometheus and Grafana are bootstrapped with the EKS cluster to collect and visualize metrics. Custom dashboards in Grafana monitor services.
+- **Logging**: FluentD collects logs from multiple services and forwards them to CloudWatch.
+- **Security**: IAM Roles follow the Least Privilege Principle. AWS EKS is used with private subnets and the AWS CNI plugin. External services are exposed using Istio Ingress Gateway with a valid SSL certificate.
+- **Service Mesh**: Istio in a sidecar configuration manages traffic between services. Istio Gateway exposes services to the outside world.
+- **SSL Certificates**: Cert-manager manages SSL certificates for services, automatically renewing them without manual intervention.
 
 
 
