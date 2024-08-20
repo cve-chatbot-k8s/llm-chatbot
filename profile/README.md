@@ -5,6 +5,8 @@ This project deploys a Chatbot using Retrieval-Augmented Generation (RAG) to ans
 ### Architecture Overview
 
 ![Kubernetes Architecture](./kubernetes.png)
+![Chatbot Architecture](./Chatbot.png)
+
 
 ### Key Components
 
